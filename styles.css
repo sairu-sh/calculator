@@ -1,20 +1,33 @@
 * {
   box-sizing: border-box;
 }
+html,
+body {
+  height: 100%;
+}
 
 @font-face {
   font-family: "sunny-spells";
   src: url("sunny-spells-font/SunnyspellsRegular-MV9ze.woff2") format("woff2");
 }
 
+.main {
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  flex-wrap: wrap;
+}
+
 .frame {
-  height: 800px;
-  width: 600px;
+  height: 650px;
+  width: 400px;
   background-color: cyan;
-  position: absolute;
+  /* position: absolute;
   left: 50%;
   top: 10%;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, 0); */
+  margin-top: 2%;
+  margin-right: 10%;
   border: 5px solid rgba(0, 0, 0, 0.8);
   border-radius: 10px;
 }
@@ -35,7 +48,7 @@
 
 .input {
   font-family: "sunny-spells";
-  font-size: 50px;
+  font-size: 2.5em;
   text-align: left;
   margin-left: 20px;
   overflow-x: hidden;
@@ -43,7 +56,7 @@
 
 .output {
   font-family: "sunny-spells";
-  font-size: 50px;
+  font-size: 2.5em;
   text-align: right;
   margin-right: 20px;
 }
@@ -64,13 +77,14 @@
   background-color: rgba(255, 255, 255, 0.8);
   border: 5px solid rgba(0, 0, 0, 0.8);
   padding: 20px;
-  font-size: 35px;
+  font-size: 1.5em;
   text-align: center;
   border-radius: 5px;
   font-weight: 900;
   font-family: "sunny-spells";
 }
 
-.symbol {
-  font-size: 30px;
+.customize {
+  border-right: 2px solid black;
+  height: 100%;
 }
