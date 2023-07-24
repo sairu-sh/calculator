@@ -11,16 +11,26 @@ body {
   src: url("sunny-spells-font/SunnyspellsRegular-MV9ze.woff2") format("woff2");
 }
 
-.main {
-  display: flex;
-  justify-content: space-between;
-  height: 100%;
-  flex-wrap: wrap;
+@media (min-width: 740px) {
+  .main {
+    display: flex;
+    justify-content: space-between;
+    height: 100%;
+    flex-wrap: wrap;
+  }
+  .customize {
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    height: 100%;
+    padding-right: 5px;
+  }
 }
 
 .frame {
-  height: 650px;
-  width: 400px;
+  height: 560px;
+  max-width: 350px;
+  min-width: 350px;
+  width: 40%;
   background-color: cyan;
   /* position: absolute;
   left: 50%;
@@ -30,6 +40,7 @@ body {
   margin-right: 10%;
   border: 5px solid rgba(0, 0, 0, 0.8);
   border-radius: 10px;
+  display: none;
 }
 
 .screen {
@@ -51,7 +62,7 @@ body {
   font-size: 2.5em;
   text-align: left;
   margin-left: 20px;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .output {
@@ -68,7 +79,7 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   width: 90%;
-  height: 70%;
+  height: 20%;
   gap: 10px;
   align-items: center;
 }
@@ -77,7 +88,7 @@ body {
   background-color: rgba(255, 255, 255, 0.8);
   border: 5px solid rgba(0, 0, 0, 0.8);
   padding: 20px;
-  font-size: 1.5em;
+  font-size: 1em;
   text-align: center;
   border-radius: 5px;
   font-weight: 900;
@@ -85,6 +96,23 @@ body {
 }
 
 .customize {
+  position: absolute;
+  top: 15px;
+  height: 100px;
+  overflow-y: auto;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  border-bottom: 2px solid black;
+}
+
+button {
+  width: 50px;
+}
+
+.customize div {
   border-right: 2px solid black;
-  height: 100%;
+  padding-right: 10px;
 }
