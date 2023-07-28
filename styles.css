@@ -19,7 +19,7 @@ body {
   flex-wrap: nowrap;
 }
 
-.frame {
+.body {
   display: block;
   height: 560px;
   max-width: 350px;
@@ -39,7 +39,7 @@ body {
   position: relative;
   top: 4%;
   left: 5%;
-  background-color: lightgray;
+  background-color: #fdf6e4;
   border: 5px solid rgba(0, 0, 0, 0.8);
   border-radius: 10px;
   display: flex;
@@ -51,7 +51,7 @@ body {
   font-family: "sunny-spells";
   font-size: 2.5em;
   text-align: left;
-  margin-left: 20px;
+  margin: 0 15px;
   overflow: hidden;
 }
 
@@ -74,8 +74,8 @@ body {
   align-items: center;
 }
 
-.grid-item {
-  background-color: rgba(255, 255, 255, 0.8);
+.buttons {
+  background-color: #ffffffcc;
   border: 5px solid rgba(0, 0, 0, 0.8);
   padding: 7px;
   font-size: 2.2em;
@@ -87,8 +87,9 @@ body {
 
 .customize {
   border-right: 2px solid black;
-  padding-right: 15px;
+  padding-right: 25px;
   text-align: center;
+  margin: 0 20px;
 }
 
 .customize p {
@@ -98,6 +99,7 @@ body {
 
 .customize div:not(:last-child) {
   border-bottom: 2px solid black;
+  padding: 0 20px;
   padding-bottom: 15px;
 }
 
@@ -107,6 +109,9 @@ body {
   /* margin: 5px; */
   border-radius: 50%;
   border: 0.5px solid black;
+}
+.buttons:hover {
+  border: 5px solid #df2518;
 }
 
 .button-container {
@@ -146,7 +151,7 @@ button:hover:not(.active) {
 }
 
 @media (max-width: 740px) {
-  .frame {
+  .body {
     position: absolute;
     left: 25%;
     top: 100px;
@@ -163,6 +168,8 @@ button:hover:not(.active) {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border-bottom: 2px solid black;
+    margin: 0;
+    padding-right: 0;
   }
 
   .customize > :not(:first-child):not(:nth-child(4)) {
