@@ -39,7 +39,10 @@ const container = function (targetE, className) {
     .closest(".customize")
     .querySelector(".rainbow-button");
 
-  if (rainbow.classList.contains("active")) {
+  if (
+    rainbow.classList.contains("active") &&
+    targetE.classList.contains("basic-button")
+  ) {
     rainbow.classList.remove("active");
     defaultSetting();
   }
@@ -79,58 +82,122 @@ const colors = function (targetE) {
 //choosing the element that was clicked
 const clickedElement = function (targetE) {
   const text = String(
-    targetE.closest(".button-container").previousElementSibling.textContent
+    targetE.closest(".button-container").previousElementSibling.innerText
   );
   return text.toLowerCase();
 };
 
+//variables needed for functionalities
+const currentValue = "0";
+const maxDisplayLength = 16;
+let opActive = false;
+let ipString = "";
+let symbolActive = false;
+let dotActive = false;
+let mulActive = "";
+
 //all clearing the calculator
 const allClearBtn = function () {
-  input.textContent = "0";
-  output.textContent = "";
+  input.innerText = "0";
+  output.innerText = "0";
+  opActive = false;
+  ipString = "";
 };
 
 //clearing the input
 const clearBtn = function () {
-  input.textContent = "0";
+  input.innerText = "0";
+  ipString = "";
 };
 
 //changing the sign
 const changeSign = function () {
-  input.textContent = -Number(output.textContent);
+  input.innerText = -Number(output.innerText);
+  opActive = console.log(output.innerText);
+};
+
+//computing and showing output
+const compute = function () {
+  if (ipString.includes("%")) {
+    console.log("%");
+    return;
+  }
+  const string = eval(ipString);
+  output.innerText = string;
+  opActive = true;
 };
 
 //adding the input to the screen
-const currentValue = "0";
-const maxDisplayLength = 16;
 
-const inputScreen = function (number) {
-  /*
-  if (currentValue === "0" || currentValue === "Error") {
-    currentValue = number;
+const addNumber = function (number) {
+  if (!opActive) {
+    if (input.innerText === "0") {
+      input.innerText = number;
+    } else {
+      input.innerText += number;
+    }
   } else {
-    currentValue += number;
-  }
-  // Truncate the displayed value if it exceeds the maximum length
-  if (currentValue.length > maxDisplayLength) {
-    currentValue = currentValue.slice(currentValue.length - maxDisplayLength);
-  }
-  input.textContent = currentValue;
-  */
-  if (number === "*") number = "×";
-  if (number === "/") number = "÷";
-  if (input.textContent === "0") {
+    clearBtn();
+    opActive = false;
     input.textContent = number;
-  } else {
-    input.textContent += number;
+  }
+  ipString = ipString + number;
+  symbolActive = false;
+  console.log(ipString);
+};
+
+//converting the symbols to JS underestandable forms
+const convert = function (symbol) {
+  switch (symbol) {
+    case "×":
+      return "*";
+    case "÷":
+      return "/";
+    case "+":
+      return "+";
+    case ".":
+      return ".";
+    default:
+      return "-";
   }
 };
 
+const addSymbol = function (symbol) {
+  if (symbol === "*") symbol = "×";
+  if (symbol === "/") symbol = "÷";
+  const symb = convert(symbol);
+  if (!opActive) {
+    if (!symbolActive) {
+      input.innerText += symbol;
+    } else {
+      // if (
+      //   (activeSymbol === "*" || activeSymbol === "/") &&
+      //   (symbol === "×" || symbol === "÷")
+      // ) {
+      input.innerText = input.innerText.slice(0, -1);
+      input.innerText += symbol;
+      // activeSymbol = input.innerText.slice(-1);
+      // console.log(activeSymbol);
+      ipString = ipString.slice(0, -1);
+      // }
+    }
+  } else {
+    input.innerText = output.innerText;
+    input.innerText += symbol;
+  }
+  opActive = false;
+  ipString = ipString + symb;
+  // if (symb === "+" || symb === "-")
+  symbolActive = true;
+};
+
+// const addPercent = const()
+
 //backspace implementation
 const backspace = function () {
-  input.textContent = input.textContent.slice(0, -1);
-  if (input.textContent === "") {
-    input.textContent = "0";
+  input.innerText = input.innerText.slice(0, -1);
+  if (input.innerText === "") {
+    input.innerText = "0";
     return;
   }
 };
@@ -143,39 +210,56 @@ btnAll.addEventListener("click", function (e) {
     container(e.target, ".button-container");
     colors(e.target);
   }
+
   if (e.target.classList.contains("mode-button")) container(e.target, ".mode");
+
   if (e.target.classList.contains("rainbow-button")) {
     btns.forEach((btn) => btn.classList.remove("active"));
     e.target.classList.add("active");
   }
 });
 
+//for click events on operands and operations
+
 body.addEventListener("click", function (e) {
   e.preventDefault();
   if (e.target.classList.contains("all-clear")) allClearBtn();
   if (e.target.classList.contains("clear")) clearBtn();
-  if (e.target.closest(".buttons").classList.contains("changer")) changeSign();
-  if (
-    e.target.classList.contains("symbol") ||
-    e.target.classList.contains("number")
-  )
-    inputScreen(e.target.textContent);
+  if (e.target.classList.contains("changer")) changeSign();
+  if (e.target.classList.contains("number")) addNumber(e.target.innerText);
+  if (e.target.classList.contains("symbol")) addSymbol(e.target.innerText);
+  if (e.target.classList.contains("percent")) addPercent(e.target.innerText);
+  if (e.target.classList.contains("equalsTo")) compute();
 });
 
 window.addEventListener("keydown", function (e) {
   e.preventDefault();
   console.log(e.key);
+  if (Number(e.key)) addNumber(e.key);
+
   if (
-    Number(e.key) ||
     e.key === "+" ||
     e.key === "-" ||
     e.key === "*" ||
     e.key === "/" ||
     e.key === "."
   )
-    inputScreen(e.key);
+    addSymbol(e.key);
 
   if (e.key === "Backspace") backspace();
+
+  if (e.key === "Enter") compute();
 });
 
-// console.log(Number("a"));
+/*
+  if (currentValue === "0" || currentValue === "Error") {
+    currentValue = number;
+  } else {
+    currentValue += number;
+  }
+  // Truncate the displayed value if it exceeds the maximum length
+  if (currentValue.length > maxDisplayLength) {
+    currentValue = currentValue.slice(currentValue.length - maxDisplayLength);
+  }
+  input.innerText = currentValue;
+  */
