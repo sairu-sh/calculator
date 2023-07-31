@@ -52,6 +52,11 @@ const container = function (targetE, className) {
     rainbow.classList.remove("active");
     body.classList.remove("rainbow");
     retConfig();
+    body.classList.remove("rainbow");
+    screen.classList.remove("rainbow");
+    buttons.forEach((btn) => {
+      btn.classList.remove("rainbow");
+    });
   }
 
   [...clickedContainer.children].forEach((child) =>
