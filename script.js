@@ -12,28 +12,34 @@ const allClear = document.querySelector(".all-clear");
 const numGrid = document.querySelector(".grid-container");
 
 //functions
+//the customization section
+let active = [];
+//saving the configuration before the rainbow button was pressed
+const saveConfig = function () {
+  active = [];
+  btns.forEach((btn, i) => {
+    if (btn.classList.contains("active"))
+      active.push(btn.getAttribute("data-color"));
+  });
+  console.log(active);
+};
 
-/*
-//capturing the state before rainbow
-const state = function(){
-  borderColor = body.
-}
-*/
-
-//setting the default calculator setting after exiting the rainbow setting
-const defaultSetting = function () {
-  btnContainer.forEach((container) =>
-    container.querySelector(".basic-button").classList.add("active")
-  );
+//returning the configuration to the saved one
+const retConfig = function () {
+  let i = 0;
+  btns.forEach((btn) => {
+    console.log(btn);
+    if (btn.getAttribute("data-color") === active[i]) {
+      btn.classList.add("active");
+      i++;
+      console.log(i);
+    }
+  });
 };
 
 //to set the active class to the elements
 const container = function (targetE, className) {
   const clickedContainer = targetE.closest(className);
-
-  [...clickedContainer.children].forEach((child) =>
-    child.classList.remove("active")
-  );
 
   const rainbow = targetE
     .closest(".customize")
@@ -44,9 +50,13 @@ const container = function (targetE, className) {
     targetE.classList.contains("basic-button")
   ) {
     rainbow.classList.remove("active");
-    defaultSetting();
+    body.classList.remove("rainbow");
+    retConfig();
   }
 
+  [...clickedContainer.children].forEach((child) =>
+    child.classList.remove("active")
+  );
   targetE.classList.add("active");
 };
 
@@ -87,14 +97,17 @@ const clickedElement = function (targetE) {
   return text.toLowerCase();
 };
 
+//the actual functions of the calculator
 //variables needed for functionalities
 const currentValue = "0";
 const maxDisplayLength = 16;
 let opActive = false;
-let ipString = "";
+//if we initiliaze ipstring as empty, if we push symbol at start e.g. +, ip string will be '+ 9' which will throw error
+let ipString = "0";
 let symbolActive = false;
 let dotActive = false;
-let mulActive = "";
+let mulActive = false;
+let percentActive = false;
 
 //all clearing the calculator
 const allClearBtn = function () {
@@ -104,35 +117,59 @@ const allClearBtn = function () {
   ipString = "";
 };
 
-//clearing the input
+//clearing the input screen
 const clearBtn = function () {
   input.innerText = "0";
   ipString = "";
 };
 
-//changing the sign
-const changeSign = function () {
-  input.innerText = -Number(output.innerText);
-  opActive = console.log(output.innerText);
+//% sign functionality
+const addPercent = function (percent) {
+  // if (!symbolActive) {
+  if (!opActive) {
+    if (!percentActive) {
+      if (!symbolActive) {
+        input.innerText += "%";
+        ipString = ipString + "/100";
+      } else {
+        replacer();
+        input.innerText += "%";
+        ipString = ipString + "/100";
+      }
+    }
+    percentActive = true;
+  } else {
+    input.innerText = output.innerText + "%";
+    ipString = eval(ipString.slice(-1) / 100);
+    console.log(ipString);
+  }
+  return;
 };
 
 //computing and showing output
 const compute = function () {
   if (ipString.includes("%")) {
-    console.log("%");
+    addPercent();
     return;
   }
   const string = eval(ipString);
   output.innerText = string;
   opActive = true;
+  dotActive = false;
+  mulActive = false;
+  percentActive = false;
+  symbolActive = false;
 };
 
-//adding the input to the screen
-
 const addNumber = function (number) {
+  //because if ipsrting is 0 at start and we push a number e.g. 9, it will become 09
+  if (ipString === "0") ipString = "";
   if (!opActive) {
     if (input.innerText === "0") {
       input.innerText = number;
+    } else if (percentActive) {
+      input.innerText = input.innerHTML + "×" + number;
+      ipString = ipString + "*";
     } else {
       input.innerText += number;
     }
@@ -143,7 +180,27 @@ const addNumber = function (number) {
   }
   ipString = ipString + number;
   symbolActive = false;
+  // dotActive = false;
+  mulActive = false;
+  percentActive = false;
   console.log(ipString);
+};
+
+//checking for the symbol to determine the next action.
+const symbolChecker = function (symb) {
+  if (symb === "+" || symb === "-") {
+    symbolActive = true;
+    mulActive = false;
+  } else {
+    mulActive = true;
+    symbolActive = false;
+  }
+};
+
+//adding the symbol to the inputTExt
+const replacer = function () {
+  input.innerText = input.innerText.slice(0, -1);
+  ipString = ipString.slice(0, -1);
 };
 
 //converting the symbols to JS underestandable forms
@@ -156,6 +213,7 @@ const convert = function (symbol) {
     case "+":
       return "+";
     case ".":
+      dotActive = true;
       return ".";
     default:
       return "-";
@@ -165,40 +223,53 @@ const convert = function (symbol) {
 const addSymbol = function (symbol) {
   if (symbol === "*") symbol = "×";
   if (symbol === "/") symbol = "÷";
+
+  //making sure two user cannot put two dots consecutively
+  if (symbol === "." && dotActive) {
+    dotActive = true;
+    return;
+  }
   const symb = convert(symbol);
+
+  if (symb != ".") dotActive = false;
+
   if (!opActive) {
     if (!symbolActive) {
+      //if the active symbol is * or / and the symbol pushed is also one of those, replace the symbol
+      if (mulActive && (symb === "*" || symb === "/")) {
+        replacer();
+      }
+
       input.innerText += symbol;
     } else {
-      // if (
-      //   (activeSymbol === "*" || activeSymbol === "/") &&
-      //   (symbol === "×" || symbol === "÷")
-      // ) {
-      input.innerText = input.innerText.slice(0, -1);
+      replacer();
       input.innerText += symbol;
-      // activeSymbol = input.innerText.slice(-1);
-      // console.log(activeSymbol);
-      ipString = ipString.slice(0, -1);
-      // }
     }
   } else {
+    //when output is active, pushing symbol will add the symbol to the output
     input.innerText = output.innerText;
+    ipString = input.innerText;
     input.innerText += symbol;
   }
-  opActive = false;
-  ipString = ipString + symb;
-  // if (symb === "+" || symb === "-")
-  symbolActive = true;
-};
 
-// const addPercent = const()
+  ipString = ipString + symb;
+  opActive = false;
+  percentActive = false;
+  symbolChecker(symb);
+};
 
 //backspace implementation
 const backspace = function () {
-  input.innerText = input.innerText.slice(0, -1);
-  if (input.innerText === "") {
-    input.innerText = "0";
-    return;
+  if (input.innerText.slice(-1) === "%") {
+    input.innerText = input.innerText.slice(0, -1);
+    ipString = ipString.slice(0, -4);
+    console.log(ipString);
+  } else {
+    replacer();
+    if (input.innerText === "") {
+      input.innerText = "0";
+      return;
+    }
   }
 };
 
@@ -211,21 +282,23 @@ btnAll.addEventListener("click", function (e) {
     colors(e.target);
   }
 
-  if (e.target.classList.contains("mode-button")) container(e.target, ".mode");
-
   if (e.target.classList.contains("rainbow-button")) {
+    saveConfig();
     btns.forEach((btn) => btn.classList.remove("active"));
     e.target.classList.add("active");
+    body.classList.add("rainbow");
+    screen.classList.add("rainbow");
+    buttons.forEach((btn) => {
+      btn.classList.add("rainbow");
+    });
   }
 });
 
 //for click events on operands and operations
-
 body.addEventListener("click", function (e) {
   e.preventDefault();
   if (e.target.classList.contains("all-clear")) allClearBtn();
-  if (e.target.classList.contains("clear")) clearBtn();
-  if (e.target.classList.contains("changer")) changeSign();
+  if (e.target.classList.contains("delete")) backspace();
   if (e.target.classList.contains("number")) addNumber(e.target.innerText);
   if (e.target.classList.contains("symbol")) addSymbol(e.target.innerText);
   if (e.target.classList.contains("percent")) addPercent(e.target.innerText);
@@ -236,6 +309,7 @@ window.addEventListener("keydown", function (e) {
   e.preventDefault();
   console.log(e.key);
   if (Number(e.key)) addNumber(e.key);
+  if (e.key === "0") addNumber(e.key);
 
   if (
     e.key === "+" ||
@@ -250,16 +324,3 @@ window.addEventListener("keydown", function (e) {
 
   if (e.key === "Enter") compute();
 });
-
-/*
-  if (currentValue === "0" || currentValue === "Error") {
-    currentValue = number;
-  } else {
-    currentValue += number;
-  }
-  // Truncate the displayed value if it exceeds the maximum length
-  if (currentValue.length > maxDisplayLength) {
-    currentValue = currentValue.slice(currentValue.length - maxDisplayLength);
-  }
-  input.innerText = currentValue;
-  */
